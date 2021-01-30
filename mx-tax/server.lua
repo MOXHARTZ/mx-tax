@@ -40,19 +40,18 @@ function Tax()
       end
     end
   end
-  -- local res = MySQL.Sync.fetchAll('SELECT tax, identifier FROM users')
-  local res = MySQL.Sync.fetchAll('SELECT tax, citizenid, job FROM users')
+  local res = MySQL.Sync.fetchAll('SELECT tax, identifier FROM users')
     for k,v in pairs(res) do
         if CFG.JobDiff == true then
           for d,x in pairs(CFG.jobTax) do
-            MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE citizenid = @citizenid', {
-              ['@citizenid'] = v.citizenid,
+            MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE identifier = @identifier', {
+              ['@identifier'] = v.identifier,
               ['@tax'] = v.job == x.job and x.tax + v.tax or v.tax + math.random(CFG.CitizenTax[1], CFG.CitizenTax[2])
             })
           end
         else
-          MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE citizenid = @citizenid', {
-            ['@citizenid'] = v.citizenid,
+          MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE identifier = @identifier', {
+            ['@identifier'] = v.identifier,
             ['@tax'] = v.tax + math.random(CFG.CitizenTax[1], CFG.CitizenTax[2])
           })
         end
@@ -78,8 +77,8 @@ end)
 ESX.RegisterServerCallback('mx-tax:GetCitizenTax', function(source, cb)
     local garbage = {}
     local xPlayer = ESX.GetPlayerFromId(source)
-    local rr = MySQL.Sync.fetchAll('SELECT tax FROM users WHERE citizenid = @citizenid', {['@citizenid'] = xPlayer.citizenid}) -- FOR ME...
-    -- local rr = MySQL.Sync.fetchAll('SELECT tax FROM users WHERE identifier = @identifier', {['@identifier'] = xPlayer.identifier})
+    --local rr = MySQL.Sync.fetchAll('SELECT tax FROM users WHERE citizenid = @citizenid', {['@citizenid'] = xPlayer.citizenid}) -- FOR ME...
+    local rr = MySQL.Sync.fetchAll('SELECT tax FROM users WHERE identifier = @identifier', {['@identifier'] = xPlayer.identifier})
     for k,v in pairs(rr) do
         if v.tax ~= 0 and v.tax ~= nil then
             garbage[k] = v
@@ -92,7 +91,7 @@ ESX.RegisterServerCallback('mx-tax:PayCitizenTax', function(source, cb, tax)
     local xPlayer = ESX.GetPlayerFromId(source)
     if xPlayer.getAccount('bank').money >= tonumber(tax) then
       xPlayer.removeAccountMoney('bank', tonumber(tax))
-        MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE citizenid = @citizenid', {['@tax'] = 0, ['@citizenid'] = xPlayer.citizenid})
+        MySQL.Async.execute('UPDATE users SET `tax` = @tax WHERE identifier = @identifier', {['@tax'] = 0, ['@identifier'] = xPlayer.identifier})
         -- MySQL.Async.execute('UPDATE owned_vehicles SET `tax` = @tax WHERE identifier = @identifier', {['@tax'] = 0, ['@identifier'] = xPlayer.identifier})
         cb(true)
         TriggerClientEvent('mythic_notify:client:SendAlert', source, { type = 'inform', text = 'You paid!'})
