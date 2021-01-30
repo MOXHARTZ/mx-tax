@@ -34,7 +34,7 @@ function Tax()
       for i = 1, #result do
         local vh = json.decode(result[i].vehicle)
         if GetHashKey(v.model) == vh.model then
-            MySQL.Async.execute('UPDATE owned_vehicles SET `tax` = @tax WHERE plate = @plate',{['@tax']=result[i].tax+math.floor(v.price/3),['@plate']=result[i].plate
+            MySQL.Async.execute('UPDATE owned_vehicles SET `tax` = @tax WHERE plate = @plate',{['@tax']=result[i].tax+math.floor(v.price/2),['@plate']=result[i].plate
             })
         end
       end
