@@ -1,4 +1,4 @@
-# mx-tax 
+#  MX-TAX 
 
 A simple tax system
 
