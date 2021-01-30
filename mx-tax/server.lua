@@ -1,4 +1,4 @@
-CFG = {
+CFG = { 
   CitizenTax = {1500, 7500}, --Tax amount
   JobDiff = true, --Taxes on individual jobs
   jobTax = {
